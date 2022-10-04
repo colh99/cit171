@@ -1,20 +1,16 @@
 //© 2021 Sean Murdock
 
-let userName = "";
-let password = "";
+let phonenumber = "";
+let onetimepassword = "";
 let verifypassword = "";
 let passwordRegEx=/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!]).{6,40})/;
 
-function setusername(){
-    userName = $("#username").val();
+function setphonenumber(){
+    phonenumber = $("#phonenumber").val();
 }
 
-function setuserpassword(){
-    password = $("#password").val();
-    var valid=passwordRegEx.exec(password);
-    if (!valid){
-        alert('Must be 6 digits, upper, lower, number, and symbol');
-    }
+function setonetimepassword(){
+    onetimepassword = $("#onetimepassword").val();
 }
 
 function setverifypassword(){
@@ -46,16 +42,12 @@ function checkexpiredtoken(token){
     }
 }
 
-function userlogin(){
-    setuserpassword();
-    setusername();
+const sendtext =()=>{
+    setonetimepassword();
+    setphonenumber();
     $.ajax({
         type: 'POST',
-        url: 'https://dev.stedi.me/login',
-        data: JSON.stringify({userName, password}),
-        success: function(data) {
-            window.location.href = "/timer.html#"+data;//add the token to the url
-        },
+        url: 'https://dev.stedi.me/twofactorlogin/' + phonenumber,
         contentType: "application/text",
         dataType: 'text'
     });
@@ -93,7 +85,7 @@ function createuser(){
     $.ajax({
         type: 'POST',
         url: '/user',
-        data: JSON.stringify({userName, 'email': userName, password, 'verifyPassword': vpwd, 'accountType':'Personal'}),//we are using the email as the user name
+        data: JSON.stringify({phonenumber, 'email': phonenumber, onetimepassword, 'verifyPassword': vpwd, 'accountType':'Personal'}),//we are using the email as the user name
         success: function(data) { alert(data);
 //        readonlyforms("newUser");
 //        alert(readonlyforms("newUser"));
@@ -107,7 +99,7 @@ function getstephistory(){
       $.ajax({
             type: 'POST',
             url: '/stephistory',
-            data: JSON.stringify({userName}),
+            data: JSON.stringify({phonenumber}),
             success: function(data) { alert(data);
             json = $.parseJSON(data);
             $('#results').html(json.name+' Total Steps: ' + json.stepTotal)},
@@ -123,6 +115,6 @@ var enterFunction = (event) =>{
     }
 }
 
-var passwordField = document.getElementById("password");
+var passwordField = document.getElementById("onetimepassword");
 
 passwordField.addEventListener("keyup", enterFunction);
