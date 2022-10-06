@@ -42,6 +42,22 @@ function checkexpiredtoken(token){
     }
 }
 
+
+function userlogin() {
+    setonetimepassword();
+    setphonenumber();
+    $.ajax({
+        type: 'POST',
+        url: 'https://dev.stedi.me/twofactorlogin',
+        data: JSON.stringify({phoneNumber: phonenumber, oneTimePassword: onetimepassword}),
+        success: function(data) {
+            window.location.href = "/timer.html#"+data;//add the token to the url
+        },
+        contentType: "application/text",
+        dataType: 'text'
+    });
+}
+
 const sendtext =()=>{
     setonetimepassword();
     setphonenumber();
