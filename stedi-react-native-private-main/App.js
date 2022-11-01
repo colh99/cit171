@@ -70,7 +70,7 @@ const App = () => {
               method: "POST",
               headers: {
                 "content-type": "application/text",
-              }
+              },
               body: 
             });
             setLoggedInState(loggedInStates.CODE_SENT)
