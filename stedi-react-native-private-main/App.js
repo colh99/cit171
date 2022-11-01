@@ -66,13 +66,21 @@ const App = () => {
           title="Login"
           onPress={async () => {
             console.log("Login button was pressed");
-            await fetch("https://dev.stedi.me/twofactorlogin", {
+            const loginResponse=await fetch("https://dev.stedi.me/twofactorlogin", {
               method: "POST",
               headers: {
                 "content-type": "application/text",
-              }
-              body: 
+              },
+              body:JSON.stringify({
+                phoneNumber,
+                oneTimePassword
+              })
             });
+            if(loginResponse.status==200){//200 means the password was valid
+              setLoginState(loggedInStates.LOGGED_IN);
+            } else{
+              setLoginState(NOT_LOGGED_IN);
+            }
             setLoggedInState(loggedInStates.CODE_SENT)
           }}
         />
