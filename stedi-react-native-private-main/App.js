@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import Home from "./screens/Home";
 import { NavigationContainer } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AppStack = createNativeStackNavigator();
 const loggedInStates = {
@@ -72,16 +73,15 @@ const App = () => {
                 "content-type": "application/text",
               },
               body:JSON.stringify({
-                phoneNumber,
-                oneTimePassword
+                phoneNumber: phoneNumber,
+                oneTimePassword: oneTimePassword
               })
             });
             if(loginResponse.status==200){//200 means the password was valid
-              setLoginState(loggedInStates.LOGGED_IN);
+              setLoggedInState(loggedInStates.LOGGED_IN);
             } else{
-              setLoginState(NOT_LOGGED_IN);
+              setLoggedInState(loggedInStates.NOT_LOGGED_IN);
             }
-            setLoggedInState(loggedInStates.CODE_SENT)
           }}
         />
       </View>
