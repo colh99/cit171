@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnboardingScreen from "./screens/OnboardingScreen";
 import Home from "./screens/Home";
 import { NavigationContainer } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AppStack = createNativeStackNavigator();
 const loggedInStates = {
@@ -66,14 +67,21 @@ const App = () => {
           title="Login"
           onPress={async () => {
             console.log("Login button was pressed");
-            await fetch("https://dev.stedi.me/twofactorlogin", {
+            const loginResponse=await fetch("https://dev.stedi.me/twofactorlogin", {
               method: "POST",
               headers: {
                 "content-type": "application/text",
               },
-              body: 
+              body:JSON.stringify({
+                phoneNumber: phoneNumber,
+                oneTimePassword: oneTimePassword
+              })
             });
-            setLoggedInState(loggedInStates.CODE_SENT)
+            if(loginResponse.status==200){//200 means the password was valid
+              setLoggedInState(loggedInStates.LOGGED_IN);
+            } else{
+              setLoggedInState(loggedInStates.NOT_LOGGED_IN);
+            }
           }}
         />
       </View>
