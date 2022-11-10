@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {StyleSheet, Text,View,Image,TouchableOpacity,AsyncStorage,TextInput,Button,
+import {StyleSheet, Text,View,Image,TouchableOpacity,TextInput,Button, Alert,
 } from "react-native";
 import Navigation from "./components/Navigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -21,6 +21,28 @@ const App = () => {
   const [homeTodayScore, setHomeTodayScore] = React.useState(0);
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [oneTimePassword, setOneTimePassword] = React.useState(null);
+
+  useEffect(() => { // This code runs before user is shown the app screen
+    const getSessionToken = async()=>{
+      const sessionToken = await AsyncStorage.getItem('sessionToken');
+      console.log('sessionToken', sessionToken);
+      const validateResponse = await fetch('https://dev.stedi.me/validate/'+sessionToken,
+      {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/text'
+        }
+      });
+
+      if(validateResponse.status==200){ // good, non-expired token
+        const userName = await validateResponse.text();
+        await AsyncStorage.setItem('userName', userName); // saves username for later
+        setLoggedInState(loggedInStates.LOGGED_IN); // if token is bad, it skips to this line
+        console.log('userName', userName);
+      }
+    }
+    getSessionToken();
+  });
 
   if (isFirstLaunch == true) {
     return (<OnboardingScreen setFirstLaunch={setFirstLaunch} />)
@@ -78,8 +100,12 @@ const App = () => {
               })
             });
             if(loginResponse.status==200){//200 means the password was valid
+              const sessionToken = await loginResponse.text();
+              await AsyncStorage.setItem('sessionToken', sessionToken) // stores in storage
               setLoggedInState(loggedInStates.LOGGED_IN);
             } else{
+              console.log('response status', loginResponse.status);
+              Alert.alert('Invalid', 'Invalid login information')
               setLoggedInState(loggedInStates.NOT_LOGGED_IN);
             }
           }}
